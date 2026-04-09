@@ -1,0 +1,176 @@
+{% extends "after_login_layout.html" %}
+
+{% block title_after %}Dashboard{% endblock %}
+
+{% block username %}{{informations.username}}{% endblock %}
+{% block user_image %}{{informations.user_image}}{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block streak %} <i class="mr-1 fas fa-fire-alt text-gray-800"></i> <h6 class="mb-0 mr-5 text-gray-800">Questions Streak : {{streak}}</h6>{% endblock %}
+
+{% block main_content %}
+    <div class="row">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="/my_plans" style="text-decoration-color:rgb(59, 95, 206) ;">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Active Plans</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{active_plans}}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="/history" style="text-decoration-color:mediumseagreen;">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Completed Plans</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{completed_plans}}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="/quiz" style="text-decoration-color: goldenrod;">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Pending Quizzes</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{incompleted_quizzes}}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-question fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="/quiz" style="text-decoration-color: darkturquoise;">
+                <div class="card border-left-info shadow h-100 py-2" href="/quiz">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Completed Quizzes</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{completed_quizzes}}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-check fa-2x text-gray-300" id="image_check"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+
+        <!-- Area Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <!-- Project Card Example -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">Plans</h6>
+                </div>
+                <div class="card-body">
+                    {% if plans %}
+                        {% for plan in plans %}
+                            <h4 class="small font-weight-bold">{{plan.name}} <span
+                                    class="float-right">{{plan.percentage}}%</span></h4>
+                            <div class="progress mb-4">
+                                <div class="progress-bar {{ 'bg-success' if plan.percentage >= 75 else 'bg-info' if plan.percentage >=50 else 'bg-warning' if plan.percentage >= 25 else 'bg-danger'}}" role="progressbar" style="width: {{ plan.percentage }}%"
+                                    aria-valuenow="{{ plan.percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="row">
+                            <p class="text-gray-500 px-3">No plans yet.</p>
+                            <i class="fas fa-sad-tear fa-2x text-gray-400"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">Answers</h6>
+                </div>
+                <div class="card-body">
+                    {% if total_answers == 0 %}
+                        <div class="row">
+                            <p class="text-gray-500 px-3">No questions answered yet.</p>
+                            <i class="fas fa-sad-tear fa-2x text-gray-400"></i>
+                        </div>
+                    {% else %}
+                        <div class="chart-pie pt-4 pb-2" id="Chart">
+                            <canvas id="myPieChart"></canvas>
+                        </div>
+                        <div class="mt-4 text-center small">
+                            <span class="mr-2">
+                                <i class="fas fa-circle text-success"></i> Correct
+                            </span>
+                            <span class="mr-2">
+                                <i class="fas fa-circle text-danger"></i> Incorrect
+                            </span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+            const right_answers = {{ right | tojson }};
+            const wrong_answers = {{ wrong | tojson }};
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const ctx = document.getElementById("myPieChart");
+                if (ctx) {
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ["Correct", "Incorrect"],
+                            datasets: [{
+                                data: [right_answers, wrong_answers],
+                                backgroundColor: ['#1cc88a', '#e74a3b'],
+                                hoverBackgroundColor: ['#17a673', '#c0392b'],
+                                hoverBorderColor: "rgba(234, 236, 244, 1)"
+                            }]
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            cutoutPercentage: 80,
+                            legend: {
+                                display: false
+                            }
+                        }
+                    });
+                }
+            });
+    </script>
+{% endblock %}

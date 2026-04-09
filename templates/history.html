@@ -1,0 +1,85 @@
+{% extends "after_login_layout.html" %}
+
+{% block title_after %}History{% endblock %}
+
+{% block username %}{{informations.username}}{% endblock %}
+{% block user_image %}{{informations.user_image}}{% endblock %}
+{% block page_title %}History{% endblock %}
+{% block page_introduction %}Here you can see your entire history of your plans.{% endblock %}
+
+{%  block main_content %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-success">Plans</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Operation</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if plans %}
+                            {% for plan in plans %}
+                                <tr>
+                                    <td>{{plan.name}}</td>
+                                    <td>{{plan.description}}</td>
+                                    {% if plan.operation == 'completed' %}
+                                        <td class="bg-gradient-success text-white">{{plan.operation}}</td>
+                                    {% elif plan.operation == 'deleted' %}
+                                        <td class="bg-gradient-danger text-white">{{plan.operation}}</td>
+                                    {% else %}
+                                        <td>{{plan.operation}}</td>
+                                    {% endif %}
+                                    <td>{{plan.time}}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-gray-600">There aren't plans in history</td>        
+                            </tr> 
+                        {% endif %} 
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-success">Parts</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Part</th>
+                            <th>Completed at</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if parts %}
+                            {% for part in parts %}
+                                <tr>
+                                    <td>{{part.plan_name}}</td>
+                                    <td>{{part.name}}</td>
+                                    <td>{{part.time}}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-gray-600">There aren't parts completed</td>        
+                            </tr> 
+                        {% endif %} 
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

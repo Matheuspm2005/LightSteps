@@ -1,0 +1,118 @@
+{% extends "after_login_layout.html" %}
+
+{% block title_after %}Quiz{% endblock %}
+
+{% block username %}{{informations.username}}{% endblock %}
+{% block user_image %}{{informations.user_image}}{% endblock %}
+{% block page_title %}{{quiz_name}} Quiz{% endblock %}
+
+{%  block main_content %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let questions = JSON.parse('{{ questions | tojson | safe }}');
+            let index = 0;
+            let answeredQuestions = {};
+
+            function question() {
+                if (index < 0) {
+                    index = 0;
+                }
+                else if (index===questions.length) {
+                    document.getElementById("next").disabled = true;
+                }
+                    
+                document.getElementById("question_number").innerHTML = "Question" + questions[index].number;
+                document.getElementById("question").innerText = questions[index].question;
+
+                let options = document.getElementById("options");
+                options.innerHTML = "";
+                let correctOption = document.getElementById("correction");
+                correctOption.innerHTML = "";
+
+                questions[index].options.forEach(function(options_data, opt){    
+                    const form_id = `form${index}_${opt}`
+                    let option = document.createElement('div');
+                    option.className = "card shadow mb-2 mx-5";
+                    option.innerHTML = `<form action="/questions" id="${form_id}" method="post"><input type="hidden" name="quiz_id" value="{{ quiz_id }}"><input type="hidden" name="answer" value="${options_data.is_correct}"><input type="hidden" name="question_id" value="${questions[index].id}"><div class="card-body p-2 pl-4" style="cursor: pointer;">${options_data.option}</div></form>`;
+                    option.dataset.correct = options_data.is_correct ? "1" : "0";
+
+                    if (answeredQuestions[questions[index].id]) {
+                        option.style.pointerEvents = 'none';
+                    }
+                    else {
+                        option.addEventListener('click', function (send) {
+                            if (answeredQuestions[questions[index].id]) return;
+                            send.preventDefault();
+                            check(option);
+
+                            answeredQuestions[questions[index].id] = true;
+                            document.querySelectorAll("#options .card").forEach(opt => {
+                                opt.style.pointerEvents = 'none';
+                            });
+                            let form = option.querySelector("form");
+
+                            fetch("/questions", {
+                                method: "POST",
+                                body: new FormData(form)
+                            }).catch(error => {
+                                console.error("Erro ao enviar:", error);
+                            });
+                        });
+                    }
+                    
+                    
+
+                    options.appendChild(option);
+                });
+            }
+            
+            document.querySelector('#next').addEventListener('click', function () {
+                index++;
+                question();
+            });
+
+            document.querySelector('#previous').addEventListener('click', function () {
+                index--;
+                question();
+            });
+            question();
+        });
+
+        function check(option) {
+            let check = document.querySelectorAll("#options .card");
+            
+            if (option.dataset.correct === "1") {
+                option.classList.add("bg-success");
+            }
+            else if (option.dataset.correct === "0") {
+                option.classList.add("bg-danger");
+                check.forEach(function(opt) {
+                    if (opt.dataset.correct === "1") {
+                        opt.classList.add("border-success")
+                    }
+                });
+            }
+        }
+        
+    </script>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-success" id="question_number"></h6>
+        </div>
+        <div class="card-body bg-white" id="question"></div>
+        <div class="card-body" id="correction"></div>
+    </div>
+    <div id="options"></div>
+    <a id="previous" value="previous" class="btn btn-light btn-icon-split ml-5">
+        <span class="icon text-gray-600">
+            <i class="fas fa-arrow-left"></i>
+        </span>
+    </a>
+    <a id="next" value="next" class="btn btn-light btn-icon-split">
+        <span class="icon text-gray-600">
+            <i class="fas fa-arrow-right"></i>
+        </span>
+    </a>
+    
+{% endblock %}

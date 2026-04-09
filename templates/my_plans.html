@@ -1,0 +1,74 @@
+{% extends "after_login_layout.html" %}
+
+{% block title_after %}MyPlans{% endblock %}
+
+{% block username %}{{informations.username}}{% endblock %}
+{% block user_image %}{{informations.user_image}}{% endblock %}
+{% block page_title %}MyPlans{% endblock %}
+{% block page_introduction %}Here you can manage the parts of your reading plans, marking the steps you completed to continue with the next ones. {% endblock %}
+
+{% block main_content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-success">Active Plans</h6>
+    </div>
+    <div class="card-body">
+        {% if user_plans %}
+            {% for plan in user_plans %}
+                <div class="card shadow mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ plan.name }}</strong> - {{ plan.description }} ({{ plan.duration }} days)
+                        </div>
+                        <form action="/my_plans" method="post">
+                            <input type="hidden" name="submit_type" value="delete">
+                            <button type="submit" name="plan_id" value="{{ plan.plan_id }}" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                    <div class="collapse" id="collapse{{ loop.index }}">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Part</th>
+                                            <th width="13%">Ok</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for part in parts %}
+                                            {% if part.plan_id == plan.plan_id %}
+                                                <tr>
+                                                    <td>{{ part.name }}</td>
+                                                    <td>
+                                                        <form action="/my_plans" method="post">
+                                                            <input type="hidden" name="submit_type" value="ok">
+                                                            <input type="hidden" name="plan_id" value="{{ part.plan_id }}">
+                                                            <button type="submit" name="part_id" class="btn btn-success btn-circle btn-sm" value="{{ part.id }}">
+                                                                <i class="fas fa-flag"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a data-toggle="collapse" href="#collapse{{ loop.index }}" role="button" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                            Show/Hide Parts
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-muted">You have no active plans.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

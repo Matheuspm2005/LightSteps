@@ -1,0 +1,62 @@
+{% extends "after_login_layout.html" %}
+
+{% block title_after %}My Account{% endblock %}
+
+{% block username %}{{informations.username}}{% endblock %}
+{% block user_image %}{{informations.user_image}}{% endblock %}
+
+{%  block my_account %}
+    <div style="position: relative; height: 30vh; ">
+        <div class="bg-success" style="height: 25vh; width: 100%; position: absolute;"></div>
+        <div class="ml-5 rounded-circle bg-warning" style="position: absolute; margin-top: 15vh; width: 15vh; min-width: 126px; height: 15vh; min-height: 126px;"><img src="{{informations.user_image}}" alt="profile_image" style="width: 100%; height: 100%; object-fit: cover;"></div>
+    </div>
+{% endblock %}
+{% block main_content %}
+    <div class="ml-5 row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <h4>Username</h4>
+            <p>
+                {{informations.username}}
+
+                <a onclick="form('username')" class="btn btn-light btn-icon-split btn-sm" style="width: 20px; height: 25px; object-fit:fill;" value="{{informations.username}}">
+                <span class="icon text-gray-600">
+                    <i class="fas fa-edit"></i>
+                </span>
+                </a>
+
+                <div id="username_form" class="d-none">
+                    <form action="/my_account" method="post">
+                        <input type="hidden" name="submit_type" value="change_username">
+                        <input type="text" class="form-control form-control-user" name="username" placeholder="New Username">
+                    </form>
+                </div>
+            </p>
+            <hr>
+            <h4>Password</h4>
+            <a onclick="form('password')" class="btn btn-light btn-icon-split">
+                <span class="text-gray-700">Change Password</span>
+            </a>
+            <div id="password_form" class="d-none">
+                <form action="my_account" method="post">
+                    <input type="hidden" name="submit_type" value="change_password">
+                    <input type="password" class="form-control form-control-user mb-1" name="old_password" placeholder="Old password">
+                    <input type="password" class="form-control form-control-user mb-1" name="New password" placeholder="New password">
+                    <input type="password" class="form-control form-control-user mb-1" name="Confirmation" placeholder="Confirmation">
+                    <button type="submit" class="btn btn-success btn-icon-split p-2">
+                        <span>Change</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        function form(type) {
+            if (type === "username") {
+                document.getElementById('username_form').classList.toggle('d-none');
+            }
+            else if (type === "password") {
+                document.getElementById('password_form').classList.toggle('d-none');
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "after_login_layout.html" %}
+
+{% block title_after %}Quizzes{% endblock %}
+
+{% block username %}{{informations.username}}{% endblock %}
+{% block user_image %}{{informations.user_image}}{% endblock %}
+{% block page_title %}Quiz{% endblock %}
+{% block page_introduction %}Here you can practice the things you learned from each book of the bible to earn points.{% endblock %}
+
+{%  block main_content %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-success">Quizzes</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <tbody>
+                        {% for quiz in quizzes %}
+                            <tr>
+                                <td>{{quiz.book}}</td>
+                                <td>{{quiz.total_questions}}</td>
+                                {% if quiz.completed %}
+                                    <td>
+                                        <form action="/quiz" method="post">
+                                            <input type="hidden" name="quiz_id" value="{{quiz.id}}">
+                                            <button type="submit" name="submit_type" class="btn btn-danger btn-sm" value="restart">
+                                                Restart
+                                            </button>
+                                        </form>
+                                    </td>
+                                {% elif not quiz.completed and not quiz.completed_questions %}
+                                    <td>
+                                        <form action="/quiz" method="post">
+                                            <input type="hidden" name="quiz_id" value="{{quiz.id}}">
+                                            <button type="submit" name="submit_type" class="btn btn-success btn-sm" value="start">
+                                                Start
+                                            </button>
+                                        </form>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        <form action="/quiz" method="post">
+                                            <input type="hidden" name="quiz_id" value="{{quiz.id}}">
+                                            <button type="submit" name="submit_type" class="btn btn-warning btn-sm" value="continue">
+                                                Continue
+                                            </button>
+                                        </form>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
