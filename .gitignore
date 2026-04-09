@@ -1,6 +1,8 @@
 venv/
 .env
 __pycache__/
-instance/
 *.pyc
 *.db
+.vscode/
+sqlite3.exe
+flask_session/
